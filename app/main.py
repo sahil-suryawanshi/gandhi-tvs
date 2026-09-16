@@ -1,8 +1,42 @@
-from fastapi import FastAPI
+import os
+
+from dotenv import load_dotenv
+from fastapi import FastAPI, UploadFile, File
+from deepgram import DeepgramClient
+
+load_dotenv()
 
 app = FastAPI()
+
+deepgram = DeepgramClient(
+    api_key=os.getenv("DEEPGRAM_API_KEY")
+)
 
 
 @app.get("/")
 def home():
     return {"message": "Gandhi TVS API is working"}
+
+
+@app.post("/audio")
+async def receive_audio(file: UploadFile = File(...)):
+    audio_data = await file.read()
+
+    print(f"Received audio: {file.filename}")
+    print(f"Audio size: {len(audio_data)} bytes")
+
+    response = deepgram.listen.v1.media.transcribe_file(
+        request=audio_data,
+        model="nova-3",
+        smart_format=True
+    )
+
+    transcript = response.results.channels[0].alternatives[0].transcript
+
+    print(f"Transcript: {transcript}")
+
+    return {
+        "message": "Audio processed successfully",
+        "filename": file.filename,
+        "transcript": transcript
+    }
