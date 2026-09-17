@@ -34,7 +34,7 @@ try:
             audio_buffer,
             SAMPLE_RATE,
             audio
-        )
+        )  #"convert the captured PCM samples into WAV format in memory."
 
         audio_buffer.seek(0)
 

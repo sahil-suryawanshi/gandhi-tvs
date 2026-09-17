@@ -19,8 +19,9 @@ def home():
 
 
 @app.post("/audio")
-async def receive_audio(file: UploadFile = File(...)):
-    audio_data = await file.read()
+async def receive_audio(file: UploadFile = File(...)):   #POST /audio endpoint. It accepts the WAV file.
+
+    audio_data = await file.read()                       #"Here I read the uploaded audio into bytes."
 
     print(f"Received audio: {file.filename}")
     print(f"Audio size: {len(audio_data)} bytes")
@@ -30,6 +31,7 @@ async def receive_audio(file: UploadFile = File(...)):
         model="nova-3",
         smart_format=True
     )
+    # "The backend returns the transcript as JSON."
 
     transcript = response.results.channels[0].alternatives[0].transcript
 
