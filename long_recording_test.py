@@ -13,7 +13,7 @@ DEVICE = 1
 # 30 = 30 seconds
 # 60 = 1 minute
 # 120 = 2 minutes
-RECORDING_DURATION = 120
+RECORDING_DURATION = 30
 
 CHUNK_DURATION = 2
 
