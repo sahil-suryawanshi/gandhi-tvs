@@ -17,7 +17,11 @@ app = FastAPI()
 
 llm_provider = OpenAILLMProvider()
 tts_provider = ElevenLabsTTSProvider()
-playback_engine = AudioPlaybackEngine()
+playback_engine = AudioPlaybackEngine(
+    sample_rate=48000,
+    channels=1,
+    device=11,
+)
 
 voice_pipeline = VoicePipeline(
     llm_provider=llm_provider,
