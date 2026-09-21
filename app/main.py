@@ -2,11 +2,17 @@ import os
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile, File
+from pydantic import BaseModel
 from deepgram import DeepgramClient
+
+from app.llm import generate_response
 
 load_dotenv()
 
 app = FastAPI()
+
+class ChatRequest(BaseModel):
+    message: str
 
 deepgram = DeepgramClient(
     api_key=os.getenv("DEEPGRAM_API_KEY")
@@ -41,4 +47,11 @@ async def receive_audio(file: UploadFile = File(...)):   #POST /audio endpoint. 
         "message": "Audio processed successfully",
         "filename": file.filename,
         "transcript": transcript
+    }
+@app.post("/chat")
+async def chat(request: ChatRequest):
+    response = generate_response(request.message)
+
+    return {
+        "response": response
     }
