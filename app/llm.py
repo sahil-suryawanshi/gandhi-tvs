@@ -16,13 +16,14 @@ def generate_response(user_text: str) -> str:
     response = client.responses.create(
         model=MODEL,
         instructions=(
-	    "You are a voice assistant. "
-	    "Reply in 5 to 6 words. "
-	    "Be natural and concise. "
-	    "No markdown."
-	),
+            "You are a voice assistant. "
+            "Reply in 5 to 6 words. "
+            "Be natural and concise. "
+            "No markdown."
+        ),
         input=user_text,
-        max_output_tokens=12,
+        reasoning={"effort": "none"},
+        max_output_tokens=16,
     )
 
     return response.output_text.strip()
