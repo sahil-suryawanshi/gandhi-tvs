@@ -6,10 +6,24 @@ from pydantic import BaseModel
 from deepgram import DeepgramClient
 
 from app.voice.openai_llm_provider import OpenAILLMProvider
+from app.audio.playback import AudioPlaybackEngine
+from app.voice.elevenlabs_tts_provider import ElevenLabsTTSProvider
+from app.voice.openai_llm_provider import OpenAILLMProvider
+from app.voice.voice_pipeline import VoicePipeline
 
 load_dotenv()
 
 app = FastAPI()
+
+llm_provider = OpenAILLMProvider()
+tts_provider = ElevenLabsTTSProvider()
+playback_engine = AudioPlaybackEngine()
+
+voice_pipeline = VoicePipeline(
+    llm_provider=llm_provider,
+    tts_provider=tts_provider,
+    playback_engine=playback_engine,
+)
 
 llm_provider = OpenAILLMProvider()
 
@@ -56,4 +70,19 @@ async def chat(request: ChatRequest):
 
     return {
         "response": response
+    }
+
+class VoiceRequest(BaseModel):
+    message: str
+
+
+@app.post("/voice")
+async def voice(request: VoiceRequest):
+    response_text = await voice_pipeline.process(
+        request.message
+    )
+
+    return {
+        "user_text": request.message,
+        "response": response_text,
     }
