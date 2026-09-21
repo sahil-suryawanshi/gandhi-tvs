@@ -5,11 +5,13 @@ from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 from deepgram import DeepgramClient
 
-from app.llm import generate_response
+from app.voice.openai_llm_provider import OpenAILLMProvider
 
 load_dotenv()
 
 app = FastAPI()
+
+llm_provider = OpenAILLMProvider()
 
 class ChatRequest(BaseModel):
     message: str
@@ -50,7 +52,7 @@ async def receive_audio(file: UploadFile = File(...)):   #POST /audio endpoint. 
     }
 @app.post("/chat")
 async def chat(request: ChatRequest):
-    response = generate_response(request.message)
+    response = await llm_provider.generate_response(request.message)
 
     return {
         "response": response
