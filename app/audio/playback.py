@@ -7,7 +7,7 @@ from app.audio.queue import AudioQueue
 class AudioPlayback:
     def __init__(
         self,
-        sample_rate: int = 16000,
+        sample_rate: int = 48000,
         channels: int = 1,
         device=None,
     ):
@@ -15,25 +15,11 @@ class AudioPlayback:
         self.channels = channels
         self.device = device
 
-        self.stream = None
-
     def start(self):
-        if self.stream is not None:
-            return
-
-        self.stream = sd.OutputStream(
-            samplerate=self.sample_rate,
-            channels=self.channels,
-            dtype="int16",
-            device=self.device,
-        )
-
-        self.stream.start()
+        # Playback is started by sd.play() when audio is provided.
+        pass
 
     def play(self, audio_data: bytes):
-        if self.stream is None:
-            self.start()
-
         audio = np.frombuffer(
             audio_data,
             dtype=np.int16,
@@ -42,13 +28,15 @@ class AudioPlayback:
         if self.channels > 1:
             audio = audio.reshape(-1, self.channels)
 
-        self.stream.write(audio)
+        sd.play(
+            audio,
+            samplerate=self.sample_rate,
+            device=self.device,
+            blocking=True,
+        )
 
     def stop(self):
-        if self.stream is not None:
-            self.stream.stop()
-            self.stream.close()
-            self.stream = None
+        sd.stop()
 
 
 class AudioPlaybackEngine:

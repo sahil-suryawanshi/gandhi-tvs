@@ -5,7 +5,6 @@ from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 from deepgram import DeepgramClient
 
-from app.voice.openai_llm_provider import OpenAILLMProvider
 from app.audio.playback import AudioPlaybackEngine
 from app.voice.elevenlabs_tts_provider import ElevenLabsTTSProvider
 from app.voice.openai_llm_provider import OpenAILLMProvider
@@ -28,8 +27,6 @@ voice_pipeline = VoicePipeline(
     tts_provider=tts_provider,
     playback_engine=playback_engine,
 )
-
-llm_provider = OpenAILLMProvider()
 
 class ChatRequest(BaseModel):
     message: str
